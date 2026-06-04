@@ -24,6 +24,10 @@ app.add_middleware(
 async def root():
     return FileResponse("app/templates/index.html")
 
+@app.get("/quiz")
+async def quiz():
+    return FileResponse("app/templates/quiz.html")
+
 @app.get("/trivia")
 async def get_trivia():
     service = TriviaService()
