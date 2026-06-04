@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trivia Quiz</title>
+  <style>
+    body { font-family: Georgia, serif; margin: 2rem; background: #f9f7f1; color: #222; }
+    .question { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
+    .meta { font-size: 0.9rem; color: #666; margin-bottom: 0.5rem; }
+    .opt { display: block; margin: 0.35rem 0; }
+    button { margin-top: 1rem; padding: 0.6rem 1rem; border: 0; border-radius: 8px; background: #1f6feb; color: white; }
+    .result { margin-top: 1rem; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Trivia</h1>
+  <div id="quiz">Loading...</div>
+  <button id="gradeBtn">Check Answers</button>
+  <div id="result" class="result"></div>
+
+  <script>
+    const API_URL = "http://127.0.0.1:8000/trivia"; // your current endpoint
+
+    async function loadQuiz() {
+      const container = document.getElementById("quiz");
+      try {
+        const res = await fetch(API_URL);
+        const questions = await res.json();
+
+        container.innerHTML = "";
+        questions.forEach((q, i) => {
+          const card = document.createElement("section");
+          card.className = "question";
+
+          const meta = document.createElement("div");
+          meta.className = "meta";
+          meta.textContent = `${q.category} • ${q.difficulty}`;
+
+          const title = document.createElement("h3");
+          title.textContent = `${i + 1}. ${q.question}`;
+
+          card.appendChild(meta);
+          card.appendChild(title);
+
+          q.all_answers.forEach((opt, j) => {
+            const id = `q${i}_o${j}`;
+            const label = document.createElement("label");
+            label.className = "opt";
+            label.setAttribute("for", id);
+
+            const input = document.createElement("input");
+            input.type = "radio";
+            input.name = `q${i}`;
+            input.id = id;
+            input.value = opt;
+
+            label.appendChild(input);
+            label.append(` ${opt}`);
+            card.appendChild(label);
+          });
+
+          // store answer for grading
+          card.dataset.correct = q.correct_answer;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        container.textContent = "Failed to load quiz.";
+        console.error(err);
+      }
+    }
+
+    function gradeQuiz() {
+      const cards = document.querySelectorAll(".question");
+      let score = 0;
+
+      cards.forEach((card, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected && selected.value === card.dataset.correct) {
+          score++;
+        }
+      });
+
+      document.getElementById("result").textContent =
+        `Score: ${score}/${cards.length}`;
+    }
+
+    document.getElementById("gradeBtn").addEventListener("click", gradeQuiz);
+    loadQuiz();
+  </script>
+</body>
+</html>
