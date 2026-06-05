@@ -16,13 +16,60 @@
 <body>
   <h1>Trivia</h1>
   <!-- <div id="quiz">Loading...</div> -->
+  <label for="cat-select">Choose a category:</label>
+  <select id="cat-select">
+  </select>
+  <br/>
+  <label for="type-select">Choose a type:</label>
+  <select id="type-select">
+    <option value="boolean">True / False</option>
+    <option value="multiple">Multiple Choice</option>
+  </select>
+  <br/>
+  <label for="num-questions-select">Choose number of questions:</label>
+  <select id="num-questions-select">
+    <option value="1">1</option>
+  </select>
+  <br/>
   <button id="redirectBtn" onClick="goToQuiz()">Start Quiz</button>
   <!-- <div id="result" class="result"></div> -->
 
 <script>
   function goToQuiz() {
-    window.location.href = "/quiz";
+    const category = document.getElementById('cat-select').value.trim();
+    const type = document.getElementById('type-select').value.trim();
+    const number = document.getElementById('num-questions-select').value.trim();
+
+    window.location.href = `/quiz?category=${category}&type=${type}&amount=${number}`;
   }
+
+  const selectDropdown = document.getElementById("cat-select");
+  
+  try {
+    fetch("http://127.0.0.1:8000/categories")
+      .then(response => response.json())
+      .then(categories => {
+        categories.forEach(category => {
+          const option = document.createElement("option");
+          option.value = category['id'];
+          option.textContent = category['name'];
+          selectDropdown.appendChild(option);
+        });
+      });
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+  }
+
+  const selectNumDropdown = document.getElementById("num-questions-select");
+  for (let num_question = 2; num_question <= 50; num_question++) {
+    const option = document.createElement("option");
+    
+    option.value = num_question;
+    option.textContent = num_question;
+    
+    selectNumDropdown.appendChild(option);
+  }
+
 </script>
 </body>
 </html>

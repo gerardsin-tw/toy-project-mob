@@ -8,9 +8,9 @@ class TriviaService:
     def __init__(self, base_url: str = BASE_URL):
         self.base_url = base_url
 
-    async def fetch_trivia(self, amount: int = 10, type: str = "multiple"):
+    async def fetch_trivia(self, category: int, amount: int, type: str):
         async with httpx.AsyncClient() as client:
-            response = await client.get(self.base_url, params={"amount": amount, "type": type})
+            response = await client.get(self.base_url, params={"amount": amount, "type": type, "category": category})
             data = response.json()
             if data["response_code"] != 0:
                 raise Exception("Failed to fetch trivia questions")
@@ -32,4 +32,10 @@ class TriviaService:
                 }
                 processed_questions.append(processed_question)
             return processed_questions
+        
+    async def fetch_categories(self):
+        async with httpx.AsyncClient() as client:
+            response = await client.get("https://opentdb.com/api_category.php")
+            data = response.json()
+            return data["trivia_categories"]
         

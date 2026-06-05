@@ -4,6 +4,7 @@ import httpx
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
@@ -20,18 +21,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 @app.get("/")
 async def root():
     return FileResponse("app/templates/index.html")
 
 @app.get("/quiz")
-async def quiz():
+async def quiz(category: int, type: str, amount: int):
     return FileResponse("app/templates/quiz.html")
 
 @app.get("/trivia")
-async def get_trivia():
+async def get_trivia(category: int, type: str, amount: int):
     service = TriviaService()
-    questions = await service.fetch_trivia(amount=5)
+    questions = await service.fetch_trivia(category=category, type=type, amount=amount)
     return questions
+
+@app.get("/categories")
+async def get_categories():
+    service = TriviaService()
+    categories = await service.fetch_categories()
+    return categories
 
 
