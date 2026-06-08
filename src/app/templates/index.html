@@ -5,15 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Trivia Quiz</title>
   <style>
-    body { font-family: Georgia, serif; margin: 2rem; background: #f9f7f1; color: #222; }
-    .question { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
-    .meta { font-size: 0.9rem; color: #666; margin-bottom: 0.5rem; }
+    :root {
+      --bg: #f9f7f1;
+      --fg: #222;
+      --card-bg: #fff;
+      --card-border: #ddd;
+      --meta-fg: #666;
+    }
+    body.dark {
+      --bg: #1a1a2e;
+      --fg: #e0e0e0;
+      --card-bg: #16213e;
+      --card-border: #444;
+      --meta-fg: #aaa;
+    }
+    body { font-family: Georgia, serif; margin: 2rem; background: var(--bg); color: var(--fg); }
+    .question { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
+    .meta { font-size: 0.9rem; color: var(--meta-fg); margin-bottom: 0.5rem; }
     .opt { display: block; margin: 0.35rem 0; }
     button { margin-top: 1rem; padding: 0.6rem 1rem; border: 0; border-radius: 8px; background: #1f6feb; color: white; }
     .result { margin-top: 1rem; font-weight: bold; }
+    #themeToggle { position: fixed; top: 1rem; right: 1rem; margin: 0; background: #555; color: #fff; cursor: pointer; z-index: 100; }
   </style>
 </head>
 <body>
+<script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');</script>
+<button id="themeToggle">🌙 Dark mode</button>
   <h1>Trivia</h1>
   <!-- <div id="quiz">Loading...</div> -->
   <label for="cat-select">Choose a category:</label>
@@ -69,6 +86,14 @@
     
     selectNumDropdown.appendChild(option);
   }
+
+  const themeToggle = document.getElementById('themeToggle');
+  if (document.body.classList.contains('dark')) themeToggle.textContent = '☀️ Light mode';
+  themeToggle.addEventListener('click', function() {
+    const isDark = document.body.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    themeToggle.textContent = isDark ? '☀️ Light mode' : '🌙 Dark mode';
+  });
 
 </script>
 </body>
