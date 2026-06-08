@@ -12,7 +12,7 @@
 
 ## 3. Verification
 
-- [ ] 3.1 Manually verify the "New Quiz" button is visible on the quiz page
-- [ ] 3.2 Manually verify clicking "New Quiz" loads a different set of questions with the same parameters
-- [ ] 3.3 Manually verify that score text and card highlights are cleared before the new questions render
-- [ ] 3.4 Manually verify that clicking "New Quiz" while fireworks are showing removes the overlay
+- [x] 3.1 Manually verify the "New Quiz" button is visible on the quiz page
+- [x] 3.2 Manually verify clicking "New Quiz" loads a different set of questions with the same parameters
+- [x] 3.3 Manually verify that score text and card highlights are cleared before the new questions render
+- [x] 3.4 Manually verify that clicking "New Quiz" while fireworks are showing removes the overlay
