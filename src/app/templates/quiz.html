@@ -24,6 +24,7 @@
     .meta { font-size: 0.9rem; color: var(--meta-fg); margin-bottom: 0.5rem; }
     .opt { display: block; margin: 0.35rem 0; }
     button { margin-top: 1rem; padding: 0.6rem 1rem; border: 0; border-radius: 8px; background: #1f6feb; color: white; }
+    button:disabled { background: #888; cursor: not-allowed; }
     .result { margin-top: 1rem; font-weight: bold; }
     .is-true {
       border-color: #28a745;
@@ -54,12 +55,15 @@
   <h1>Trivia</h1>
   <div id="quiz">Loading...</div>
   <button id="gradeBtn">Check Answers</button>
+  <button id="newQuizBtn">New Quiz</button>
   <div id="result" class="result"></div>
 
   <script>
-    const API_URL = "http://127.0.0.1:8000/trivia"; // your current endpoint
+    const API_URL = "/trivia";
 
     async function loadQuiz() {
+      const btn = document.getElementById("newQuizBtn");
+      btn.disabled = true;
       const urlParams = new URLSearchParams(window.location.search);
       const category = urlParams.get('category');
       const type = urlParams.get('type');
@@ -68,6 +72,9 @@
       const container = document.getElementById("quiz");
       try {
         const res = await fetch(`${API_URL}?category=${category}&type=${type}&amount=${amount}`);
+        if (!res.ok) {
+          throw new Error(`Server error: ${res.status} ${res.statusText}`);
+        }
         const questions = await res.json();
 
         container.innerHTML = "";
@@ -109,6 +116,19 @@
       } catch (err) {
         container.textContent = "Failed to load quiz.";
         console.error(err);
+      } finally {
+        let remaining = 5;
+        btn.textContent = `New Quiz (${remaining}s)`;
+        const interval = setInterval(() => {
+          remaining--;
+          if (remaining <= 0) {
+            clearInterval(interval);
+            btn.disabled = false;
+            btn.textContent = "New Quiz";
+          } else {
+            btn.textContent = `New Quiz (${remaining}s)`;
+          }
+        }, 1000);
       }
     }
 
@@ -145,7 +165,18 @@
       }
     }
 
+    function newQuiz() {
+      document.getElementById("result").textContent = "";
+      document.querySelectorAll(".question").forEach(card => {
+        card.classList.remove("is-true", "is-false");
+      });
+      const firework = document.querySelector(".firework");
+      if (firework) firework.remove();
+      loadQuiz();
+    }
+
     document.getElementById("gradeBtn").addEventListener("click", gradeQuiz);
+    document.getElementById("newQuizBtn").addEventListener("click", newQuiz);
     loadQuiz();
 
     const themeToggle = document.getElementById('themeToggle');

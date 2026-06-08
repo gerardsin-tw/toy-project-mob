@@ -63,7 +63,7 @@
   const selectDropdown = document.getElementById("cat-select");
   
   try {
-    fetch("http://127.0.0.1:8000/categories")
+    fetch("/categories")
       .then(response => response.json())
       .then(categories => {
         categories.forEach(category => {
